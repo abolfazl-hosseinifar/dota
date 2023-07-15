@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/heros.dart' as hero1;
 
 class HeroDetailScreen extends StatelessWidget {
-  const HeroDetailScreen({Key? key}) : super(key: key);
+  const HeroDetailScreen({super.key, required this.hero});
+
+  // Declare a field that holds the Todo.
+  final hero1.Hero hero;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,16 @@ class HeroDetailScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF02282b),
       appBar: AppBar(
         // The title text which will be shown on the action bar
-        title: const Text("Dota 2"),
+        title: Text(
+          hero.name ?? "Dota 2",
+          style: GoogleFonts.cabinSketch(
+            textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.normal),
+          ),
+        ),
         centerTitle: true,
         backgroundColor: const Color(0xFF02282b),
         //backgroundColor: Colors.white,
@@ -42,14 +53,14 @@ class HeroDetailScreen extends StatelessWidget {
                   ),
                 ),
                 child: Image.network(
-                  'https://dota2ok.ru/wp-content/uploads/2018/02/Lion.jpg',
-                  fit: BoxFit.cover,
+                  hero.imgList ?? "",
+                  fit: BoxFit.contain,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
                 child: Text(
-                  "Lion",
+                  hero.name ?? "",
                   style: GoogleFonts.cabinSketch(
                     textStyle: const TextStyle(
                         color: Colors.white,
@@ -62,13 +73,13 @@ class HeroDetailScreen extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 48.0),
+            padding: const EdgeInsets.fromLTRB(12, 48, 12, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Expanded(
                   child: Text(
-                    "لاین هیروی بسیار باگی است. این هیرو خوراک لاش زدن و استیل کردن کیل های کری تیم است",
+                    hero.description ?? "",
                     style: GoogleFonts.vazirmatn(
                       textStyle: const TextStyle(
                           color: Colors.white,

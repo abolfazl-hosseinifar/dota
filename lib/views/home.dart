@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dota/view_models/heros_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as devtools;
@@ -7,8 +8,11 @@ import 'dart:developer' as devtools;
 //import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 //import 'package:transparent_image/transparent_image.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-import '../classes/heros.dart';
+import '../models/heros.dart';
+
+import 'hero_detail_screen.dart';
 
 final List<String> imgList = [
   'https://www.kjcesports.com/wp-content/uploads/2023/04/Dota2_DrowRanger.jpg',
@@ -52,10 +56,11 @@ class _MyHomePageState extends State<MyHomePage>
           ))
       .toList();
 
-  List<Heros> heros_list = [];
+  late Heros heros_list;
 
   @override
   Widget build(BuildContext context) {
+    var herosViewModel = context.watch<HerosViewModel>();
     return Scaffold(
       backgroundColor: const Color(0xFF02282b),
       appBar: AppBar(
@@ -144,41 +149,70 @@ class _MyHomePageState extends State<MyHomePage>
           // SizedBox(
           //   height: 10,
           // ),
-          FutureBuilder<List<Heros>>(
-              future: fetchHeros(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<Heros>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    List<Heros> list_heros = snapshot.data as List<Heros>;
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 4, right: 4),
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 200,
-                                childAspectRatio: 1.35,
-                                crossAxisSpacing: 8,
-                                mainAxisSpacing: 0),
-                        itemCount: list_heros.length,
-                        itemBuilder: (BuildContext ctx, index) {
-                          return get_item_grid(
-                              list_heros[index].imgList.toString(),
-                              list_heros[index].name.toString(),
-                              context);
-                        },
-                        padding: const EdgeInsets.only(top: 5),
-                        shrinkWrap: true,
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    // handle error here
-                  }
-                }
-                return const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF0e5e66)),
-                );
-              })
+
+          // with future builder
+
+          // FutureBuilder<Heros>(
+          //     future: fetchHeros(),
+          //     builder: (BuildContext context, AsyncSnapshot<Heros> snapshot) {
+          //       devtools.log(
+          //           "length is: ${herosViewModel.herosList.heros?.length}");
+
+          //       if (snapshot.connectionState == ConnectionState.done) {
+          //         if (snapshot.hasData) {
+          //           Heros list_heros = snapshot.data as Heros;
+          //           return Padding(
+          //             padding: const EdgeInsets.only(left: 4, right: 4),
+          //             child: GridView.builder(
+          //               gridDelegate:
+          //                   const SliverGridDelegateWithMaxCrossAxisExtent(
+          //                       maxCrossAxisExtent: 200,
+          //                       childAspectRatio: 1.35,
+          //                       crossAxisSpacing: 8,
+          //                       mainAxisSpacing: 0),
+          //               itemCount: list_heros.heros?.length,
+          //               itemBuilder: (BuildContext ctx, index) {
+          //                 return get_item_grid(
+          //                     //list_heros[index].imgList.toString(),
+          //                     'https://s8.uupload.ir/files/shaman_66ow.jpg',
+          //                     //list_heros[index].name.toString(),
+          //                     'Drow Ranger',
+          //                     context);
+          //               },
+          //               padding: const EdgeInsets.only(top: 5),
+          //               shrinkWrap: true,
+          //             ),
+          //           );
+          //         } else if (snapshot.hasError) {
+          //           // handle error here
+          //           return CircularProgressIndicator(color: Color(0xFF0e5e66));
+          //         }
+          //       }
+          //       return const Center(
+          //         child: CircularProgressIndicator(color: Color(0xFF0e5e66)),
+          //       );
+          //     })
+
+          herosViewModel.loading
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: const EdgeInsets.only(left: 4, right: 4),
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            childAspectRatio: 1.35,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 0),
+                    itemCount: herosViewModel.herosList.heros?.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      var hero = herosViewModel.herosList.heros?[index];
+                      return get_item_grid(hero, context);
+                    },
+                    padding: const EdgeInsets.only(top: 5),
+                    shrinkWrap: true,
+                  ),
+                )
         ],
       ),
 
@@ -187,27 +221,38 @@ class _MyHomePageState extends State<MyHomePage>
   }
 }
 
-Future<List<Heros>> fetchHeros() async {
+// Future<List<Heros>> fetchHeros() async {
+//   var baseUrl = "https://iamdeveloper.ir/dota/getHerosList.php";
+//   final response = await http.get(Uri.parse(baseUrl));
+//   List<Heros> heros = [];
+//   if (response.statusCode == 200) {
+//     var jsonDataa = jsonDecode(response.body);
+//     var jsonData = jsonDataa["heros"];
+//     for (var i = 0; i < jsonData.length; i++) {
+//       Heros hero = Heros.fromJson(jsonData[i]);
+//       heros.add(hero);
+//     }
+//     return heros;
+//   }
+//   throw response;
+// }
+Future<Heros> fetchHeros() async {
   var baseUrl = "https://iamdeveloper.ir/dota/getHerosList.php";
   final response = await http.get(Uri.parse(baseUrl));
-  List<Heros> heros = [];
-  if (response.statusCode == 200) {
-    var jsonDataa = jsonDecode(response.body);
-    var jsonData = jsonDataa["heros"];
-    for (var i = 0; i < jsonData.length; i++) {
-      Heros hero = Heros.fromJson(jsonData[i]);
-      heros.add(hero);
-    }
-    return heros;
-  }
-  throw response;
+  final heros = herosFromJson(response.body);
+  return heros;
 }
 
-Widget get_item_grid(String img_link, String hero_name, context) {
+Widget get_item_grid(hero, context) {
   return InkWell(
     onTap: () {
       devtools.log("bia paeen");
-      Navigator.pushNamed(context, '/hero_detail_screen');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HeroDetailScreen(hero: hero),
+        ),
+      );
     },
     child: Container(
       child: Stack(
@@ -242,7 +287,7 @@ Widget get_item_grid(String img_link, String hero_name, context) {
               ),
               height: 180,
               width: 140,
-              child: Image.network(img_link, fit: BoxFit.contain,
+              child: Image.network(hero.imgList.toString(), fit: BoxFit.contain,
                   loadingBuilder: (BuildContext context, Widget child,
                       ImageChunkEvent? loadingProgress) {
                 if (loadingProgress == null) return child;
@@ -271,7 +316,7 @@ Widget get_item_grid(String img_link, String hero_name, context) {
             child: Row(
               children: [
                 Text(
-                  hero_name,
+                  hero.name.toString(),
                   style: GoogleFonts.cabinSketch(
                     textStyle: const TextStyle(
                         color: Color(0XFFb0e8eb),

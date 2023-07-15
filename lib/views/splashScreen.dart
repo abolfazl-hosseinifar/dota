@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:dota/main.dart';
-import 'package:dota/widgets/particles.dart';
-import 'package:dota/screens/home.dart';
+import 'package:dota/components/particles.dart';
+import 'package:dota/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';

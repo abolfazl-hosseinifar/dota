@@ -39,6 +39,13 @@ class _ParticleSystemState extends State<ParticleSystem>
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    _ticker.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return SizedBox(
