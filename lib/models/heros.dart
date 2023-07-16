@@ -33,12 +33,15 @@ class Hero {
   String? name;
   String? imgList;
   String? description;
-
+  String? kind;
+  String? wallpaper;
   Hero({
     this.id,
     this.name,
     this.imgList,
     this.description,
+    this.kind,
+    this.wallpaper,
   });
 
   factory Hero.fromJson(Map<String, dynamic> json) => Hero(
@@ -46,6 +49,8 @@ class Hero {
         name: json["name"],
         imgList: json["img_list"],
         description: json["description"],
+        kind: json["kind"],
+        wallpaper: json["wallpaper"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -53,5 +58,7 @@ class Hero {
         "name": name,
         "img_list": imgList,
         "description": description,
+        "kind": kind,
+        "wallpaper": wallpaper,
       };
 }

@@ -53,21 +53,32 @@ class HeroDetailScreen extends StatelessWidget {
                   ),
                 ),
                 child: Image.network(
-                  hero.imgList ?? "",
-                  fit: BoxFit.contain,
+                  hero.wallpaper ?? "",
+                  fit: BoxFit.cover,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
-                child: Text(
-                  hero.name ?? "",
-                  style: GoogleFonts.cabinSketch(
-                    textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 35,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic),
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      hero.name ?? "",
+                      style: GoogleFonts.cabinSketch(
+                        textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 0, 0),
+                      child: Container(
+                        height: 28,
+                        child: Image.asset("assets/images/${hero.kind}.png"),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
